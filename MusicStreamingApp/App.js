@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './src/components/HomeScreen';
 import AlbumScreen from './src/components/AlbumScreen';
+import MusicPlayerScreen from './src/components/MusicPlayerScreen';
 
 const Stack = createStackNavigator();
 
@@ -18,6 +19,7 @@ const App = () => {
       >
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="AlbumScreen" component={AlbumScreen} />
+        <Stack.Screen name="MusicPlayerScreen" component={MusicPlayerScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>

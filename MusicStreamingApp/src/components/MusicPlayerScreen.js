@@ -1,97 +1,117 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import TrackPlayer, { usePlaybackState } from 'react-native-track-player';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const MusicPlayerScreen = ({ route, navigation }) => {
   const { album, song } = route.params;
-  const playbackState = usePlaybackState();
-
-  useEffect(() => {
-    setupTrackPlayer();
-
-    // Función de limpieza al desmontar el componente
-    return cleanup;
-  }, []);
-
-  useEffect(() => {
-    // Detener la reproducción cuando se sale de la pantalla
-    return () => {
-      pausePlayback();
-    };
-  }, []);
-
-  const setupTrackPlayer = async () => {
-    try {
-      await TrackPlayer.setupPlayer();
-      await TrackPlayer.add({
-        id: 'trackId',
-        url: require('../../assets/music/reference.mp3'), // Ruta relativa al audio
-        title: song.title,
-        artist: song.artist,
-        artwork: album.color, // Usamos el color del álbum como arte de portada
-      });
-      TrackPlayer.updateOptions({
-        stopWithApp: true,
-        capabilities: [TrackPlayer.CAPABILITY_PLAY, TrackPlayer.CAPABILITY_PAUSE],
-      });
-      await TrackPlayer.play();
-    } catch (error) {
-      console.error('Error al configurar TrackPlayer:', error);
-      Alert.alert('Error', 'Hubo un problema al cargar la canción. Inténtalo de nuevo más tarde.');
-    }
-  };
-
-  const cleanup = () => {
-    TrackPlayer.destroy();
-  };
-
-  const pausePlayback = async () => {
-    try {
-      await TrackPlayer.pause();
-    } catch (error) {
-      console.error('Error al pausar la reproducción:', error);
-      Alert.alert('Error', 'Hubo un problema al pausar la reproducción. Inténtalo de nuevo más tarde.');
-    }
-  };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButtonContainer}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
+          <Text style={styles.headerTitle}>{album.title}</Text>
+
         </TouchableOpacity>
       </View>
-      <View style={styles.content}>
-        <View style={[styles.albumCover, { backgroundColor: album.color }]}>
-          <Text style={styles.albumInfoText}>{album.title}</Text>
-          <Text style={styles.albumInfoText}>{album.artist}</Text>
-        </View>
+      <View style={styles.albumContainer}>
+        <View style={[styles.albumCover, { backgroundColor: album.color }]} />
+      </View>
+
+      <View style={styles.songInfoContainer}>
         <Text style={styles.songTitle}>{song.title}</Text>
         <Text style={styles.songArtist}>{song.artist}</Text>
-        <Text style={styles.playbackState}>{getPlaybackStateText(playbackState)}</Text>
+      </View>
+
+      <View style={styles.playbackControls}>
+        <TouchableOpacity onPress={() => { /* Lógica para el botón de repetición */ }}>
+          <Ionicons name="repeat" size={24} color="#333" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => { /* Lógica para el botón de retroceso */ }}>
+          <Ionicons name="play-skip-back" size={36} color="#333" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => { /* Lógica para el botón de reproducción/pausa */ }}>
+          <Ionicons name="play-circle" size={60} color="#333" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => { /* Lógica para el botón de avance rápido */ }}>
+          <Ionicons name="play-skip-forward" size={36} color="#333" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => { /* Lógica para el botón de aleatoriedad */ }}>
+          <Ionicons name="shuffle" size={24} color="#333" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.progressBar}>
+        <View style={styles.progressIndicator} />
       </View>
     </View>
   );
 };
 
-const getPlaybackStateText = (state) => {
-  switch (state) {
-    case TrackPlayer.STATE_NONE:
-      return 'Ninguno';
-    case TrackPlayer.STATE_PLAYING:
-      return 'Reproduciendo';
-    case TrackPlayer.STATE_PAUSED:
-      return 'Pausado';
-    case TrackPlayer.STATE_STOPPED:
-      return 'Detenido';
-    default:
-      return 'Desconocido';
-  }
-};
-
 const styles = StyleSheet.create({
-  // ... Estilos aquí
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    backgroundColor: '#3498db',
+    padding: 20,
+    paddingTop: 40, // Ajuste del paddingTop para respetar la pantalla
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  backButtonContainer: {
+    paddingHorizontal: 10,
+  },
+  headerTitle: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  albumContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  albumCover: {
+    width: 300,
+    height: 300,
+    borderRadius: 10,
+  },
+  songInfoContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  songTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  songArtist: {
+    fontSize: 18,
+    color: '#888',
+    marginTop: 5,
+  },
+  playbackControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    marginTop: 20,
+  },
+  progressBar: {
+    marginVertical: 20,
+    marginHorizontal: 10,
+    height: 10,
+    backgroundColor: '#ddd',
+    borderRadius: 5,
+  },
+  progressIndicator: {
+    height: '100%',
+    width: '15%',
+    backgroundColor: '#3498db',
+    borderRadius: 5,
+  },
 });
 
 export default MusicPlayerScreen;
